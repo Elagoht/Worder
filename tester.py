@@ -4,11 +4,11 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QStatusBar, QWidget, QGri
 from PyQt5.QtGui import QIcon, QKeySequence, QColor, QFont
 from PyQt5.QtCore import Qt
 from sys import argv,exit
-from squirrel import StrBase
+from squirrel import ValueBase
 from random import choice
 
 # Create Words Database
-words=StrBase(
+words=ValueBase(
     ["Steam","Buhar"],
     ["Stick","Sopa"],
     ["Brick","Tuğla"],
@@ -25,7 +25,7 @@ words=StrBase(
     ["Specie","Madeni para"]
 )
 # Create Quiz History
-history=StrBase()
+history=ValueBase()
 unasked=words.clone()
     
 # Create Main Window
@@ -119,13 +119,12 @@ class ListTab(QWidget):
     # Define Word Add Method
     def addWord(self):
         # Get Words
-        en=self.eEnglish.text().capitalize()
-        tr=self.eTurkish.text().capitalize()
+        en=self.eEnglish.text().capitalize().strip()
+        tr=self.eTurkish.text().capitalize().strip()
         # Check Word Is Not Already Exists 
         if "" not in [tr,en] and \
            not words.queries((en,tr),(True,True),(False,False),[[0],[1]]):
             words.add(en,tr)
-            unasked.add(en,tr)
         # Sord Data Base
         words.sort()
         # Reload Table
@@ -191,6 +190,7 @@ class QuizTab(QWidget):
         self.lEmpty=QLabel("Empty",self)
         self.lvEmpty=QLabel("0",self)
         self.bFinish=QPushButton("Finish Quiz",self.gProgress)
+        self.bRetake=QPushButton("Retake Quiz",self.gProgress)
         
         self.glProgress.addWidget(self.lNumber,0,0)
         self.glProgress.addWidget(self.lTrue,0,1)
@@ -200,7 +200,8 @@ class QuizTab(QWidget):
         self.glProgress.addWidget(self.lvTrue,1,1)
         self.glProgress.addWidget(self.lvFalse,1,2)
         self.glProgress.addWidget(self.lvEmpty,1,3)
-        self.glProgress.addWidget(self.bFinish,2,0,1,4)
+        self.glProgress.addWidget(self.bFinish,2,0,1,2)
+        self.glProgress.addWidget(self.bRetake,2,2,1,2)
         
         # Widget Settings
         self.lAnswer.setAlignment(Qt.AlignRight)
@@ -222,6 +223,7 @@ class QuizTab(QWidget):
         self.bNext.clicked.connect(self.askQuestion)
         self.bSubmit.clicked.connect(self.checkAnswer)
         self.bFinish.clicked.connect(self.finishExam)
+        self.bRetake.clicked.connect(self.retakeExam)
         
         # Set Variables
         self.answer=None
@@ -232,9 +234,11 @@ class QuizTab(QWidget):
         self.vFalse=0
         self.vEmpty=0
         self.answered=False
+        self.finished=False
         
         # Initialize Methods
         self.askQuestion()
+        self.bRetake.setDisabled(True)
     
     # Define Question Asking Method
     def askQuestion(self):        
@@ -277,7 +281,7 @@ class QuizTab(QWidget):
     def checkAnswer(self):
         # Get User Answer
         ans=self.eEnglish.text() if self.askWhich==0 else self.eTurkish.text()
-        ans=ans.capitalize()
+        ans=ans.capitalize().strip()
         # Check and Increase Values
         if ans==self.toAsk[self.askWhich]:
             self.vTrue+=1
@@ -294,7 +298,7 @@ class QuizTab(QWidget):
         # Write Correct Answer
         self.lCorrect.setText(self.toAsk[self.askWhich])
         # Register Answer To History
-        history.add(*self.toAsk,ans)
+        history.add(*self.toAsk,self.askWhich,ans)
         # Set Answered True
         self.answered=True
         self.updateButtons()
@@ -306,8 +310,42 @@ class QuizTab(QWidget):
         self.bSubmit.setDisabled(self.answered)
         self.bNext.setDisabled(not self.answered if unasked else True)
         
+    # Define Finish Exam Method
     def finishExam(self):
         history.print()
+        self.finished=True
+        self.updateRetakable()
+        
+    # Define Update Retakable Button
+    def updateRetakable(self):
+        self.bFinish.setDisabled(self.finished)
+        self.bRetake.setDisabled(not self.finished)
+        
+    def retakeExam(self):
+        # Recreate Unasked Words
+        global unasked
+        unasked=words.clone()
+        
+        # Set Variables
+        self.answer=None
+        self.askWhich=0
+        self.toAsk=[]
+        self.vNum=0
+        self.vTrue=0
+        self.vFalse=0
+        self.vEmpty=0
+        self.answered=False
+        
+        # Update Fields
+        self.lvEmpty.setText("0")
+        self.lvTrue.setText("0")
+        self.lvFalse.setText("0")
+        self.lvNumber.setText(f"1/{len(words)}")
+        
+        # Start Exam
+        self.finished=False
+        self.updateRetakable()
+        self.askQuestion()
 
 app=QApplication(argv)
 win=MainWin()
