@@ -6,3 +6,4 @@ TODOs
 - [X] More than one meanings, separated with comma.
 - [X] Prompt if sure to finish exam.
 - [X] Practice tab.
+- [ ] English capitalization doesn't

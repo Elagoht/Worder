@@ -1,184 +1,16 @@
-#!/bin/env/python3
-
-from PyQt5.QtWidgets import QMainWindow, QApplication, QStatusBar, QWidget, QGridLayout, QGroupBox, QTabWidget, QLabel, QLineEdit, QTableWidget, QTableWidgetItem, QHeaderView, QPushButton, QAbstractItemView, QVBoxLayout, QHBoxLayout, QDialog, QPlainTextEdit, QMessageBox, QCheckBox, QSpinBox
+#!/bin/env python3
+from PyQt5.QtWidgets import QMainWindow, QApplication, QStatusBar, QWidget, QGridLayout, QGroupBox, QTabWidget, QLabel, QLineEdit, QTableWidget, QTableWidgetItem, QHeaderView, QPushButton, QAbstractItemView, QVBoxLayout, QHBoxLayout, QDialog, QPlainTextEdit, QMessageBox, QCheckBox, QSpinBox, QShortcut
 from PyQt5.QtGui import QIcon, QKeySequence, QColor, QFont
 from PyQt5.QtCore import Qt
+from qdarktheme import load_stylesheet
 from sys import argv,exit
 from squirrel import ValueBase
 from random import choice, shuffle
 from re import sub
 
 # Create Words Database
-words=ValueBase(
-    ["Stem"," Kök, Gövde"],
-    ["Dyslexic","Disleksi, Disleksik"],
-    ["Reputation","Ün, İtibar, Şöhret"],
-    ["Digest","Sindirim, Sindirmek"],
-    ["Mend","Tamir"],
-    ["Harsh","Ağır, Sert"],
-    ["Marsh","Bataklık"],
-    ["Creed","İnanç, Mezhep"],
-    ["Greed","Açgözlülük"],
-    ["Cruel","Acımasız"],
-    ["Freak","Çatlak"],
-    ["Forte","Kale, Güçlü Yön"],
-    ["Fleet","Donanma"],
-    ["Pout","Surat Asmak"],
-    ["Dodgy","Tehlikeli, Şüpheli, Riskli"],
-    ["Cage","Kafes"],
-    ["Bound","Ciltli, Bağlı, Zorunlu"],
-    ["Curl","Kıvrılmak"],
-    ["Worship","Tapmak"],
-    ["Treat","Tedavi Etmek"],
-    ["Ferne","Eğrelti Otu"],
-    ["Nerve","Sinir"],
-    ["Boar","Domuz"],
-    ["Crept","Süründü"],
-    ["Smote","Etkilemek, Tutulmak"],
-    ["Probe","İncelemek, Bulmak"],
-    ["Yarn","İplik"],
-    ["Croak","Vıraklamak"],
-    ["Heave, Lift","Kaldırmak"],
-    ["Limb","Uzuv"],
-    ["Testament, Will","Vasiyet"],
-    ["Defiant","Meydan Okuyan"],
-    ["Defy","Meydan Okumak"],
-    ["Labour","Emek"],
-    ["Emmet, Ant","Karınca"],
-    ["Sacrifice","Kurban Etmek"],
-    ["Fleet","Filo, Donanma"],
-    ["Sheer","Saf, Arı"],
-    ["Breez","Esinti"],
-    ["Breeze","Meltem"],
-    ["Ripple","Dalgalanma"],
-    ["Struggle","Mücadele Etmek"],
-    ["Hange","Asmak"],
-    ["Reunion","Kavuşmak"],
-    ["Surrection","Sermaye"],
-    ["Resurrection","Kıyamet, Yeniden Dirilme"],
-    ["Cluster","Küme"],
-    ["Vanish","Yok Olmak"],
-    ["Divine","İlahi"],
-    ["Wig","Peruk"],
-    ["Vagabond","Serseri"],
-    ["Do You Mind","Sakıncası Var Mı"],
-    ["Gambler","Kumarbaz"],
-    ["Apostle","Havari"],
-    ["Caterpillar","Tırtıl"],
-    ["Courage","Cesaret"],
-    ["Invest","Yatırmak"],
-    ["Intent","Niyet Amaç"],
-    ["Secretive","Ketum"],
-    ["Conjure","Çağrı"],
-    ["Audit","Denetim"],
-    ["Pendulum","Sarkaç"],
-    ["Stare","Bakmak"],
-    ["Glance","Bakış Atmak"],
-    ["Embellish","Renk Katmak, Güzelleştirmek"],
-    ["Braces","Diş Teli"],
-    ["Clutch","El Çantası"],
-    ["Sublime","Yüce"],
-    ["Slack","Geniş, Gevşek, Bol"],
-    ["Slacks","Bol Pantolon"],
-    ["Shook","Salladı"],
-    ["Dogma","Dogma"],
-    ["Nonetheless","Her Şeye Rağmen"],
-    ["Iron Out","Gidermek"],
-    ["Significance","Önem"],
-    ["Assumption","Varsayım"],
-    ["Assume","Farz Etmek"],
-    ["Egocentric","Benmerkezci"],
-    ["Eager","İstekli"],
-    ["Redundant, Unnecessary","Gereksiz"],
-    ["Representative","Temsilci"],
-    ["Ample","Bol"],
-    ["Peer","Akran, Yaşıt"],
-    ["Equate","Kıyaslanmak"],
-    ["Crucial","Hayati"],
-    ["Syllabus","Müfredat"],
-    ["Lexical","Sözcüksel"],
-    ["Desire","Arzulamak"],
-    ["Clue","Ipucu"],
-    ["Exposure","Maruz Kalma"],
-    ["Plenty","Bolca"],
-    ["Suggestopedia, Suggest","Öneri"],
-    ["Tendency","Eğilim"],
-    ["Approach","Yaklaşım, Yaklaşmak"],
-    ["Deficiency","Eksiklik"],
-    ["Noble","Soylu"],
-    ["Emerge","Ortaya Çıkmak"],
-    ["Conduct","Yürütmek"],
-    ["Manner","Tavır"],
-    ["Pertain","İlgili Olmak"],
-    ["Stipulate","Öngörmek"],
-    ["Compulsory","Zorunlu"],
-    ["Compulse, Drug","Uyuşturucu"],
-    ["Appendix","Dosya Eki"],
-    ["Apparent","Görünen"],
-    ["Apparently","Görünüşe Göre"],
-    ["Despite","Aksine"],
-    ["Concluded","Sonuçlandırılmış"],
-    ["Assessment","Değerlendirme"],
-    ["Convince","İkna Etmek"],
-    ["Bargain","Pazarlık, Pazarlık Etmek"],
-    ["Inevitably","Kaçınılmaz Olarak"],
-    ["Concrete","Somut"],
-    ["Acquisition, Win","Kazanmak"],
-    ["Attentively","Dikkatle"],
-    ["Rely","Güvenmek"],
-    ["Settle","Yerleşmek"],
-    ["Deputies","Milletvekilleri"],
-    ["Cope","Başa Çıkmak"],
-    ["Hole Punching","Delilik"],
-    ["Faciliate","Kolaylaştırmak"],
-    ["Withdrawal","Para Çekme"],
-    ["Interchangeably","Birbirinin Yerine "],
-    ["Subsequent","Sonraki"],
-    ["Submersion","Daldırma"],
-    ["Receptively","Çabukça Kavrayarak"],
-    ["Practitioner","Uygulayıcı"],
-    ["Scaffold","İskele"],
-    ["Intonation","Tonlama"],
-    ["Rehersal","Prova, Tekrarlamak"],
-    ["Will","İrade, Vasiyet"],
-    ["Tag","Künye"],
-    ["Proper","Düzgün"],
-    ["Regard","Saygınlık, Saygı"],
-    ["Superstition","Batıl Inanç"],
-    ["Low Key","Şatafatsız"],
-    ["Stimuly","Uyarıcı"],
-    ["Stalactite","Sarkıt"],
-    ["Stalagmite","Dikit"],
-    ["Restraint","Kısıtlama"],
-    ["Stove","Soba"],
-    ["Contemplate","Düşünmek"],
-    ["Gaze","Bakış"],
-    ["Stipend, Salary","Maaş"],
-    ["Gibraltar","Cebelitarık"],
-    ["Courtesy","Nezaket"],
-    ["Attractive","Cazip"],
-    ["Entrepreneur","Girişimci"],
-    ["Consequence","Sonuç"],
-    ["Chairman","Başkan"],
-    ["Imperative","Zorunlu"],
-    ["Export","İhraç"],
-    ["Import","İthal"],
-    ["Occasionally","Arada, Ara sıra"],
-    ["Rural","Kırsal"],
-    ["Dormitory","Yurt, Yatakhane, Koğuş"],
-    ["Suffer","Acı Çekmek"],
-    ["Assignment","Tez, Ödev"],
-    ["Attend","Katılmak"],
-    ["Specie","Madeni Para"],
-    ["Magnificent, Wonderful, Gorgeous, Glorious","Muhteşem"],
-    ["Exhibition","Sergilemek"],
-    ["Enthusiasm","Heves"],
-    ["Extinction","Tükenme"],
-    ["Establish","Kurmak"],
-    ["Precaution","Tedbir"],
-    ["Branch","Şube, Dal, Kol"],
-    ["Occurrences","Olay"]
-)
+words=ValueBase()
+words.addCsv("words.csv",False,";")
 # Create Quiz History
 history=ValueBase()
 unasked=words.clone()
@@ -224,9 +56,9 @@ class Central(QWidget):
         
         # Create Tab Widget
         self.tabs=QTabWidget(self)
-        self.tabs.addTab(self.tQuiz,"Quiz")
-        self.tabs.addTab(self.tPractice,"Practice")
-        self.tabs.addTab(self.tList,"Word List")
+        self.tabs.addTab(self.tQuiz,"&Quiz")
+        self.tabs.addTab(self.tPractice,"&Practice")
+        self.tabs.addTab(self.tList,"&Word List")
         
         self.layout.addWidget(self.tabs)
 
@@ -268,6 +100,10 @@ class ListTab(QWidget):
         self.tWords.setSelectionMode(QAbstractItemView.SingleSelection)
         self.tWords.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.tWords.setEditTriggers(QTableWidget.NoEditTriggers)
+        
+        # Add Shortcuts
+        self.focusSearch=QShortcut(QKeySequence("Ctrl+F"),self)
+        self.focusSearch.activated.connect(self.eSearch.setFocus)
         
         # Add Widgets to Layout
         self.layout.addWidget(self.gAdd)
@@ -318,19 +154,20 @@ class QuizTab(QWidget):
         self.gQuiz=QGroupBox("Question",self)
         self.glQuiz=QGridLayout(self.gQuiz)
         
-        self.lEnglish=QLabel("English",self)
-        self.lTurkish=QLabel("Turkish",self)
-        self.eEnglish=QLineEdit(self)
-        self.eTurkish=QLineEdit(self)
+        self.lAsked=QLabel("",self)
+        self.lWanted=QLabel("",self)
+        self.eWord=QLabel(self)
+        self.eAnswer=QLineEdit(self)
         
-        self.glQuiz.addWidget(self.lEnglish,0,0)
-        self.glQuiz.addWidget(self.lTurkish,0,1)
-        self.glQuiz.addWidget(self.eEnglish,1,0)
-        self.glQuiz.addWidget(self.eTurkish,1,1)
+        self.glQuiz.addWidget(self.lAsked,0,0)
+        self.glQuiz.addWidget(self.eWord,0,1)
+        self.glQuiz.addWidget(self.lWanted,1,0)
+        self.glQuiz.addWidget(self.eAnswer,1,1)
 
         # Create "Answer Section" Widgets
-        self.gAnswer=QGroupBox("Question",self)
+        self.gAnswer=QGroupBox("Answer",self)
         self.glAnswer=QGridLayout(self.gAnswer)
+        
         self.lvAnswer=QLabel("Correct Answer:",self)
         self.lCorrect=QLabel("None",self)
         
@@ -346,7 +183,7 @@ class QuizTab(QWidget):
         self.gProgress=QGroupBox("Progress",self)
         self.glProgress=QGridLayout(self.gProgress)
         
-        self.lNumber=QLabel("Question",self)
+        self.lNumber=QLabel("Answer",self)
         self.lvNumber=QLabel("0",self)
         self.lTrue=QLabel("True",self)
         self.lvTrue=QLabel("0",self)
@@ -411,28 +248,21 @@ class QuizTab(QWidget):
         # Check If Quiz Not Finished
         if self.finished: return
         # Clear Correct Answer
-        self.lCorrect.setStyleSheet("color:unset")
+        self.lCorrect.setStyleSheet("color:white")
         self.lCorrect.setText("?")
         # Check If There Is At Least One Word Unasked
         if unasked:
             # Clean Entries
-            self.eEnglish.setDisabled(False)
-            self.eTurkish.setDisabled(False)
-            self.eEnglish.setText("")
-            self.eTurkish.setText("")
             # Select What To Ask
+            languages=["English","Turkish"]
             self.toAsk=choice(unasked)
             self.askWhich=choice([0,1])
-            if self.askWhich==1:
-                self.eEnglish.setText(self.toAsk[0])
-                self.eEnglish.setDisabled(True)
-                self.answer=self.toAsk[1]
-                self.eTurkish.setFocus()
-            else:
-                self.eTurkish.setText(self.toAsk[1])
-                self.eTurkish.setDisabled(True)
-                self.answer=self.toAsk[0]
-                self.eEnglish.setFocus()
+            self.eWord.setText(self.toAsk[self.askWhich])
+            self.answer=self.toAsk[1-self.askWhich]
+            self.lAsked.setText(f"{languages[self.askWhich]}: ")
+            self.lWanted.setText(f"{languages[1 - self.askWhich]}: ")
+            self.eAnswer.setText("")
+            self.eAnswer.setFocus()
             # Remove Asked Word From List
             unasked.removeRow(unasked.indexof(self.toAsk))
             # Increase Question Number
@@ -454,13 +284,13 @@ class QuizTab(QWidget):
     # Define Answer Checking Method
     def checkAnswer(self):
         # Get User Answer
-        ans=self.eEnglish.text() if self.askWhich==0 else self.eTurkish.text()
+        ans=self.eAnswer.text()
         # Check and Increase Values
         if ans.strip()=="":
-            self.lCorrect.setStyleSheet("color:tomato")
+            self.lCorrect.setStyleSheet("color:cyan")
             self.vEmpty+=1
             self.lvEmpty.setText(str(self.vEmpty))
-        elif self.checkCorrection(self.toAsk[self.askWhich],ans):
+        elif self.checkCorrection(self.answer,ans):
             self.vTrue+=1
             self.lvTrue.setText(str(self.vTrue))
             self.lCorrect.setStyleSheet("color:green")
@@ -469,7 +299,7 @@ class QuizTab(QWidget):
             self.vFalse+=1
             self.lvFalse.setText(str(self.vFalse))
         # Write Correct Answer
-        self.lCorrect.setText(self.toAsk[self.askWhich])
+        self.lCorrect.setText(self.answer)
         # Register Answer To History
         history.add(*self.toAsk,self.askWhich,ans)
         # Set Answered True
@@ -550,10 +380,10 @@ class PracticeTab(QWidget):
         self.gControls=QGroupBox("Controls",self)
         self.glControls=QHBoxLayout(self.gControls)
         
-        self.bPrev=QPushButton("<",self.gControls)
+        self.bPrev=QPushButton("< &Previous",self.gControls)
         self.sCounter=QSpinBox(self.gControls)
         self.lNumber=QLabel(f"/ {len(practice)}",self.gControls)
-        self.bNext=QPushButton(">",self.gControls)
+        self.bNext=QPushButton("&Next >",self.gControls)
         
         self.glControls.addWidget(self.bPrev)
         self.glControls.addWidget(self.sCounter)
@@ -578,8 +408,8 @@ class PracticeTab(QWidget):
         self.gRestart=QGroupBox("Restart",self)
         self.glRestart=QVBoxLayout(self.gRestart)
         
-        self.cShuffle=QCheckBox("Shuffle (Don't Keep Order)",self.gRestart)
-        self.bRestart=QPushButton("Restart",self.gRestart)
+        self.cShuffle=QCheckBox("&Shuffle (Don't Keep Order)",self.gRestart)
+        self.bRestart=QPushButton("&Restart",self.gRestart)
         
         self.glRestart.addWidget(self.cShuffle)
         self.glRestart.addWidget(self.bRestart)
@@ -596,6 +426,8 @@ class PracticeTab(QWidget):
         self.lvTurkish.setAlignment(Qt.AlignCenter)
         self.lvTurkish.setWordWrap(True)
         self.sCounter.setRange(1,len(practice))
+        self.bNext.setShortcut(QKeySequence(QKeySequence("Right")))
+        self.bPrev.setShortcut(QKeySequence("Left"))
         
         # Connect Methods To Widgets
         self.bRestart.clicked.connect(self.firstWord)
@@ -661,6 +493,7 @@ class Results(QDialog):
         self.layout.addWidget(self.log)
         
 app=QApplication(argv)
+app.setStyleSheet(load_stylesheet())
 res=Results()
 win=MainWin()
 
